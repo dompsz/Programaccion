@@ -1,16 +1,43 @@
-# This is a sample Python script.
+from Bombilla import Bombilla
+from AireAcondicionado import AireAcondicionado
+from Hogar import Hogar
 
-# Press Ctrl+F5 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Bombilla
+print("\nHU01: Bombilla")
+b1 = Bombilla()
+b1.turn_on()
+b1.set_intensity(75)
+b1.set_color("red")
+print(b1.get_state())
+b1.turn_off()
+b1.set_intensity(40)
+b1.set_color("blue")
+print(b1.get_state())
 
+# AireAcondicionado
+print("\nHU02: AireAcondicionado")
+ac1 = AireAcondicionado(20, "Bedroom AC")
+ac1.turn_on()
+ac1.set_temperature(22)
+print(ac1.get_state())
+ac1.set_temperature(26)
+ac1.turn_off()
+print(ac1.get_state())
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+# Hogar
+print("\nHU03: Hogar")
+hogar = Hogar()
+hogar.add_room("Living Room")
+hogar.add_room("Bedroom")
+hogar.add_device("Living Room", b1)
+hogar.add_device("Bedroom", ac1)
 
+print("Existing rooms:", hogar.get_rooms())
+hogar.list_devices()
+hogar.device_count()
+print()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Example of modifying a device
+b2 = Bombilla()
+hogar.modify_device("Living Room", b1, b2)
+hogar.list_devices()
