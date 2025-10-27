@@ -12,19 +12,18 @@
     </coordinates>
     <panel_attributes>&lt;&lt;Bombilla&gt;&gt;
 --
-_+ counter : int_
-+ name: string
-+ is_on: bool
-+ intensity: int
-+ color: color
+- _counter: int {static}
+- _name: string
+- _is_on: bool
+- _intensity: int
+- _color: string
 --
-turn_on(): void
-turn_off(): void
-set_intensity(value:int): void
-set_color(value:color): void
-get_state(): string
-__str__(): string 
-</panel_attributes>
++ turn_on(): void
++ turn_off(): void
++ set_intensity(value: int): void
++ set_color(color: string): void
++ get_state(): string
++ __str__(): string</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -37,17 +36,16 @@ __str__(): string
     </coordinates>
     <panel_attributes>&lt;&lt;AireAcondicionado&gt;&gt;
 --
-_+ counter : int_
-+ name: string
-+ is_on: bool
-+ temperature: int
+- _counter: int {static}
+- _name: string
+- _is_on: bool
+- _temperature: int
 --
-turn_on(): void
-turn_off(): void
-set_temperature(value:int): void
-get_state(): string
-__str__(): string 
-</panel_attributes>
++ turn_on(): void
++ turn_off(): void
++ set_temperature(value: int): void
++ get_state(): string
++ __str__(): string</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -60,15 +58,15 @@ __str__(): string
     </coordinates>
     <panel_attributes>&lt;&lt;Hogar&gt;&gt;
 --
-+ rooms: dict
+- _rooms: dict
 --
 + add_room(name: string): void
 + remove_room(name: string): void
 + add_device(room_name: string, device: object): void
 + remove_device(room_name: string, device: object): void
 + modify_device(room_name: string, old_device: object, new_device: object): void
-+ list_devices(): void
-+ device_count(): void
++ list_devices(): dict
++ device_count(): tuple
 + get_rooms(): list</panel_attributes>
     <additional_attributes/>
   </element>
