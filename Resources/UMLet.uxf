@@ -109,8 +109,8 @@
 - _programador_list: list
 - _DIAS_SEMANA_MAP: dictionary {static}
 --
-+ get_week_days(): dictionary
-+ get_system_time(): string
+_+ get_week_days(): dictionary_
+_+ get_system_time(): string_
 + start(): void
 + end(): void
 + delete(): void
