@@ -30,3 +30,13 @@ class Bombilla:
     # overwrites default method to display name instead of object hexadecimal id
     def __str__(self):
         return self._name
+
+    #programador methods
+    def set_programador(self, programador: 'Programador'):
+        self._programador = programador
+        print(f"{self._name}: Programador set")
+
+    def get_programador(self):
+        if hasattr(self, '_programador'):
+            return self._programador
+        return None
