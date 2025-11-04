@@ -63,8 +63,8 @@ def programador_test():
     prog = Programador(bombilla)
     bombilla.set_programador(prog)
 
-    print("\nWeek days test:", Programador.getWeekDays())
-    print("time test:", Programador.getSystemTime())
+    print("\nWeek days test:", Programador.get_week_days())
+    print("time test:", Programador.get_system_time())
 
     try:
         days_map = Programador._DIAS_SEMANA_MAP

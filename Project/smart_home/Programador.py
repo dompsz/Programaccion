@@ -17,17 +17,17 @@ class Programador:
         self._programador_list = []
 
     @classmethod
-    def getWeekDays(cls) -> list:
+    def get_week_days(cls) -> list:
         return list(cls._DIAS_SEMANA_MAP.values())
 
     @classmethod
-    def getSystemTime(cls) -> str:
+    def get_system_time(cls) -> str:
         now = time.localtime()
         dia_str = cls._DIAS_SEMANA_MAP.get(now.tm_wday, "Unknown")
         return f"{dia_str} {now.tm_hour:02}:{now.tm_min:02}:{now.tm_sec:02}"
 
     def start(self, week_day: str, hour: int, min: int, sec: int):
-        if week_day not in self.getWeekDays():
+        if week_day not in self.get_week_days():
             print(f"ERROR: Day '{week_day}' is incorrect")
             return
 
@@ -40,7 +40,7 @@ class Programador:
             print("Programador: already planned")
 
     def end(self, week_day: str, hour: int, min: int, sec: int):
-        if week_day not in self.getWeekDays():
+        if week_day not in self.get_week_days():
             print(f"ERROR: Day '{week_day}' is incorrect")
             return
 
@@ -78,11 +78,11 @@ class Programador:
                     s == now.tm_sec):
 
                 if action_type == "START":
-                    print(f"\n!!! PROGRMADOR (Time: {self.getSystemTime()}) !!!")
+                    print(f"\n!!! PROGRMADOR (Time: {self.get_system_time()}) !!!")
                     print(f"-> Enabling {self._bombilla}")
                     self._bombilla.turn_on()
 
                 elif action_type == "STOP":
-                    print(f"\n!!! PROGRMADOR (Time: {self.getSystemTime()}) !!!")
+                    print(f"\n!!! PROGRMADOR (Time: {self.get_system_time()}) !!!")
                     print(f"-> Disabling {self._bombilla}")
                     self._bombilla.turn_off()

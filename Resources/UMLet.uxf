@@ -5,10 +5,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>100</x>
-      <y>20</y>
-      <w>210</w>
-      <h>210</h>
+      <x>320</x>
+      <y>50</y>
+      <w>230</w>
+      <h>260</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Bombilla&gt;&gt;
 --
@@ -17,21 +17,24 @@
 - _is_on: bool
 - _intensity: int
 - _color: string
+- _programador: Programador
 --
 + turn_on(): void
 + turn_off(): void
 + set_intensity(value: int): void
 + set_color(color: string): void
 + get_state(): string
-+ __str__(): string</panel_attributes>
++ __str__(): string
++ set_programador(): void
++ get_programador(): Programador</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>350</x>
-      <y>50</y>
-      <w>210</w>
+      <x>570</x>
+      <y>130</y>
+      <w>220</w>
       <h>180</h>
     </coordinates>
     <panel_attributes>&lt;&lt;AireAcondicionado&gt;&gt;
@@ -51,8 +54,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>70</x>
-      <y>290</y>
+      <x>270</x>
+      <y>360</y>
       <w>520</w>
       <h>180</h>
     </coordinates>
@@ -73,23 +76,56 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>190</x>
-      <y>220</y>
-      <w>120</w>
-      <h>90</h>
+      <x>410</x>
+      <y>300</y>
+      <w>100</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>100.0;70.0;10.0;10.0</additional_attributes>
+    <additional_attributes>80.0;60.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>350</x>
-      <y>220</y>
-      <w>130</w>
-      <h>90</h>
+      <x>550</x>
+      <y>300</y>
+      <w>150</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;70.0;110.0;10.0</additional_attributes>
+    <additional_attributes>10.0;60.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>10</x>
+      <y>70</y>
+      <w>280</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Programador&gt;&gt;
+--
+- _bombilla: Bombilla
+- _programador_list: list
+- _DIAS_SEMANA_MAP: dictionary {static}
+--
++ get_week_days(): dictionary
++ get_system_time(): string
++ start(): void
++ end(): void
++ delete(): void
++ check_schedule(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>160</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
   </element>
 </diagram>
