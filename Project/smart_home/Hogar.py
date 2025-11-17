@@ -27,11 +27,7 @@ class Hogar:
                 pass
 
     def list_devices(self):
-        room_device_map = {}
-        for room, devices in self._rooms.items():
-            device_names = [str(device) for device in devices]
-            room_device_map[room] = device_names
-        return room_device_map
+        return self._rooms
 
     def device_count(self):
         total = sum(len(d) for d in self._rooms.values())

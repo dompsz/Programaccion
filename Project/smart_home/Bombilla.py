@@ -1,40 +1,38 @@
-class Bombilla:
-    _counter = 1  # static counter for auto-naming
+from .Dispositivo import Dispositivo
 
-    def __init__(self, color="white", intensity=0, name=None):
+class Bombilla(Dispositivo):
+    _counter = 1
+
+    def __init__(self, name=None, color="white", intensity=0, state="off"):
         if name is None:
-            self._name = f"Bombilla{Bombilla._counter}"
+            name = f"Bombilla{Bombilla._counter}"
             Bombilla._counter += 1
-        else:
-            self._name = name
-
-        self._is_on = False
-        self._intensity = intensity  # 0-100
-        self._color = color
-
-    def turn_on(self):
-        self._is_on = True
-
-    def turn_off(self):
-        self._is_on = False
-
-    def set_intensity(self, value):
-        self._intensity = max(0, min(100, value))
+        
+        super().__init__(name, intensity_min=0, intensity_max=100)
+        self.intensity = intensity
+        self.color = color
+        self.state = state
 
     def set_color(self, color):
-        self._color = color
+        self.color = color
+        print(f"Color of {self.name} changed to {self.color}")
 
     def get_state(self):
-        return f"{self._name}: {'ON' if self._is_on else 'OFF'}, Intensity: {self._intensity}%, Color: {self._color}"
+        return f"{self.name}: State: {self.state}, Intensity: {self.intensity}%, Color: {self.color}"
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['color'] = self.color
+        return data
 
     # overwrites default method to display name instead of object hexadecimal id
     def __str__(self):
-        return self._name
+        return self.name
 
-    #programador methods
+    # programador methods
     def set_programador(self, programador: 'Programador'):
         self._programador = programador
-        print(f"{self._name}: Programador set")
+        print(f"{self.name}: Programador set")
 
     def get_programador(self):
         if hasattr(self, '_programador'):

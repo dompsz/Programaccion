@@ -1,0 +1,13 @@
+{
+    "rooms": {
+        "bedroom": [
+            {
+                "type": "Bombilla",
+                "name": "lightbulb",
+                "state": "on",
+                "intensity": 0,
+                "color": "white"
+            }
+        ]
+    }
+}

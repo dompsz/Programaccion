@@ -1,109 +1,162 @@
-import datetime
-import time
+import json
 from smart_home.Bombilla import Bombilla
 from smart_home.AireAcondicionado import AireAcondicionado
 from smart_home.Hogar import Hogar
-from smart_home.Programador import Programador
 
-def devices_test():
-    # Bombilla
-    print("\nHU01: Bombilla")
-    b1 = Bombilla()
-    b1.turn_on()
-    b1.set_intensity(75)
-    b1.set_color("red")
-    print(b1.get_state())
-    b1.turn_off()
-    b1.set_intensity(40)
-    b1.set_color("blue")
-    print(b1.get_state())
+def save_state(home, filename='home_state.json'):
+    state = {
+        'rooms': {}
+    }
+    for room_name, devices in home.list_devices().items():
+        state['rooms'][room_name] = [d.to_dict() for d in devices]
+    
+    with open(filename, 'w') as f:
+        json.dump(state, f, indent=4)
+    print("Home state saved.")
 
-    # AireAcondicionado
-    print("\nHU02: AireAcondicionado")
-    ac1 = AireAcondicionado(20, "Bedroom AC")
-    ac1.turn_on()
-    ac1.set_temperature(22)
-    print(ac1.get_state())
-    ac1.set_temperature(26)
-    ac1.turn_off()
-    print(ac1.get_state())
-
-    # Hogar
-    print("\nHU03: Hogar")
-    hogar = Hogar()
-    hogar.add_room("Living Room")
-    hogar.add_room("Bedroom")
-    hogar.add_device("Living Room", b1)
-    hogar.add_device("Bedroom", ac1)
-
-    print("Existing rooms:", hogar.get_rooms())
-    print("\nDevices:")
-    all_devices_map = hogar.list_devices()
-    for room, devices in all_devices_map.items():
-        print(f"Room {room}: {devices}")
-
-    total_devices, devices_in_each_room = hogar.device_count()
-    print(f"\nTotal devices: {total_devices}")
-    print("Devices per room: ", devices_in_each_room)
-
-    # Example of modifying a device
-    b2 = Bombilla()
-    hogar.modify_device("Living Room", b1, b2)
-    print("\nDevices:")
-    all_devices_map = hogar.list_devices()
-    for room, devices in all_devices_map.items():
-        print(f"Room {room}: {devices}")
-
-def programador_test():
-    print("\nProgramador testing")
-
-    bombilla = Bombilla(name="Night Lamp")
-    print(bombilla.get_state())
-
-    prog = Programador(bombilla)
-    bombilla.set_programador(prog)
-
-    print("\nWeek days test:", Programador.get_week_days())
-    print("time test:", Programador.get_system_time())
-
+def load_state(filename='home_state.json'):
     try:
-        days_map = Programador._DIAS_SEMANA_MAP
+        with open(filename, 'r') as f:
+            state = json.load(f)
+            
+        home = Hogar()
+        for room_name, devices_data in state['rooms'].items():
+            home.add_room(room_name)
+            for data in devices_data:
+                device = None
+                if data['type'] == 'Bombilla':
+                    device = Bombilla(name=data['name'], state=data['state'], intensity=data['intensity'], color=data.get('color', 'white'))
+                elif data['type'] == 'AireAcondicionado':
+                    device = AireAcondicionado(name=data['name'], state=data['state'], temperature=data.get('temperature', 24))
+                
+                if device:
+                    home.add_device(room_name, device)
+        print("Home state loaded.")
+        return home
+    except FileNotFoundError:
+        print("No saved state found. Creating a new home.")
+        return Hogar()
+    except json.JSONDecodeError:
+        print("Error reading the state file. Creating a new home.")
+        return Hogar()
 
-        now = datetime.datetime.now()
-        print(f"current time: {now.strftime('%H:%M:%S')}")
+def device_control_menu(home):
+    while True:
+        print("\n--- Device Control ---")
+        devices = []
+        for room, devs in home.list_devices().items():
+            for dev in devs:
+                devices.append((room, dev))
+        
+        if not devices:
+            print("No devices to control.")
+            return
 
-        start_time = now + datetime.timedelta(seconds=5)
-        start_day = days_map[start_time.weekday()]
+        for i, (room, dev) in enumerate(devices):
+            print(f"{i + 1}. {dev.name} in {room} ({dev.get_state()})")
+        
+        print("0. Return to the main menu and save changes")
 
-        stop_time = now + datetime.timedelta(seconds=10)
-        stop_day = days_map[stop_time.weekday()]
+        try:
+            option = int(input("Select a device to control: "))
+            if option == 0:
+                save_state(home)
+                break
+            
+            if 1 <= option <= len(devices):
+                room, device = devices[option - 1]
+                control_device(device)
+            else:
+                print("Invalid option.")
+        except ValueError:
+            print("Please enter a number.")
 
-        print(f"Start planned for: {start_day} {start_time.strftime('%H:%M:%S')}")
-        prog.start(start_day, start_time.hour, start_time.minute, start_time.second)
+def control_device(device):
+    while True:
+        print(f"\n--- Controlling: {device.name} ---")
+        print(f"Current state: {device.get_state()}")
+        print("1. Turn On")
+        print("2. Turn Off")
+        print("3. Increase intensity/temperature")
+        print("4. Decrease intensity/temperature")
+        if isinstance(device, Bombilla):
+            print("5. Change color")
+        print("0. Stop controlling this device")
 
-        print(f"Stop planned for: {stop_day} {stop_time.strftime('%H:%M:%S')}")
-        prog.end(stop_day, stop_time.hour, stop_time.minute, stop_time.second)
-
-    except Exception as e:
-        print(f"Programador setup error: {e}")
-
-    print("\nStarting program loop")
-
-    try:
-        for i in range(15):
-            print(f"Segunda {i + 1}... {bombilla.get_state()}")
-            prog.check_schedule()
-            time.sleep(1)
-
-        print("loop stopped")
-        print("Final status:", bombilla.get_state())
-
-    except KeyboardInterrupt:
-        print("\nprogram stopped")
+        try:
+            option = int(input("Select an action: "))
+            if option == 0:
+                break
+            elif option == 1:
+                device.turn_on()
+            elif option == 2:
+                device.turn_off()
+            elif option == 3:
+                try:
+                    device.increase_intensity()
+                except ValueError as e:
+                    print(f"Error: {e}")
+            elif option == 4:
+                try:
+                    device.decrease_intensity()
+                except ValueError as e:
+                    print(f"Error: {e}")
+            elif option == 5 and isinstance(device, Bombilla):
+                color = input("Enter the new color: ")
+                device.set_color(color)
+            else:
+                print("Invalid option.")
+        except ValueError:
+            print("Please enter a number.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
 
 def main():
-    devices_test()
-    programador_test()
+    home = load_state()
+
+    while True:
+        print("\n--- Main Menu ---")
+        print("1. View home status")
+        print("2. Add room")
+        print("3. Add device")
+        print("4. Control devices")
+        print("5. Save and Exit")
+
+        option = input("Select an option: ")
+
+        if option == '1':
+            print("\n--- Home Status ---")
+            for room, devices in home.list_devices().items():
+                print(f"Room: {room}")
+                for dev in devices:
+                    print(f"  - {dev.get_state()}")
+        elif option == '2':
+            room_name = input("Name of the new room: ")
+            home.add_room(room_name)
+            print(f"Room '{room_name}' added.")
+        elif option == '3':
+            room_name = input("In which room do you want to add the device?: ")
+            if room_name in home.get_rooms():
+                device_type = input("What type of device? (bombilla/aire): ").lower()
+                device_name = input("Device name: ")
+                if device_type == 'bombilla':
+                    home.add_device(room_name, Bombilla(name=device_name))
+                    print("Bombilla added.")
+                elif device_type == 'aire':
+                    home.add_device(room_name, AireAcondicionado(name=device_name))
+                    print("Aire acondicionado added.")
+                else:
+                    print("Invalid device type.")
+            else:
+                print("The room does not exist.")
+        elif option == '4':
+            device_control_menu(home)
+        elif option == '5':
+            save_state(home)
+            print("Hasta Luego!")
+            break
+        else:
+            print("Invalid option.")
 
 if __name__ == '__main__':
     main()
