@@ -1,131 +1,159 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
   <help_text/>
-  <zoom_level>10</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>320</x>
-      <y>50</y>
-      <w>230</w>
-      <h>260</h>
+      <x>64</x>
+      <y>368</y>
+      <w>304</w>
+      <h>104</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Bombilla&gt;&gt;
 --
-- _counter: int {static}
-- _name: string
-- _is_on: bool
-- _intensity: int
-- _color: string
-- _programador: Programador
+- color: str
+_-_counter: int_
 --
-+ turn_on(): void
-+ turn_off(): void
-+ set_intensity(value: int): void
-+ set_color(color: string): void
-+ get_state(): string
-+ __str__(): string
-+ set_programador(): void
-+ get_programador(): Programador</panel_attributes>
++ __init__(name: str, color: str, intensity: int, state: str): void
++ set_color(color: str): void
++ get_state(): str
++ to_dict(): dict</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>570</x>
-      <y>130</y>
-      <w>220</w>
-      <h>180</h>
+      <x>376</x>
+      <y>368</y>
+      <w>272</w>
+      <h>88</h>
     </coordinates>
     <panel_attributes>&lt;&lt;AireAcondicionado&gt;&gt;
 --
-- _counter: int {static}
-- _name: string
-- _is_on: bool
-- _temperature: int
+__counter: int_
 --
-+ turn_on(): void
-+ turn_off(): void
-+ set_temperature(value: int): void
-+ get_state(): string
-+ __str__(): string</panel_attributes>
++ __init__(name: str, temperature: int, state: str): void
++ temperature: int {property}
++ get_state(): str
++ to_dict(): dict</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>270</x>
-      <y>360</y>
-      <w>520</w>
-      <h>180</h>
+      <x>136</x>
+      <y>8</y>
+      <w>448</w>
+      <h>160</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Hogar&gt;&gt;
 --
-- _rooms: dict
+- _rooms: dict&lt;str, list&lt;Dispositivo&gt;&gt;
 --
-+ add_room(name: string): void
-+ remove_room(name: string): void
-+ add_device(room_name: string, device: object): void
-+ remove_device(room_name: string, device: object): void
-+ modify_device(room_name: string, old_device: object, new_device: object): void
-+ list_devices(): dict
++ __init__(): void
++ add_room(name: str): void
++ remove_room(name: str): void
++ add_device(room_name: str, device: Dispositivo): void
++ remove_device(room_name: str, device: Dispositivo): void
++ modify_device(room_name: str, old_device: Dispositivo, new_device: Dispositivo): void
++ list_devices(): dict&lt;str, list&lt;Dispositivo&gt;&gt;
 + device_count(): tuple
-+ get_rooms(): list</panel_attributes>
++ get_rooms(): list&lt;str&gt;</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>410</x>
-      <y>300</y>
-      <w>100</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>80.0;60.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>550</x>
-      <y>300</y>
-      <w>150</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;60.0;130.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>10</x>
-      <y>70</y>
-      <w>280</w>
-      <h>180</h>
+      <x>544</x>
+      <y>192</y>
+      <w>320</w>
+      <h>144</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Programador&gt;&gt;
 --
-- _bombilla: Bombilla
-- _programador_list: list
-- _DIAS_SEMANA_MAP: dictionary {static}
+- _device: Dispositivo
+- _schedule_list: list
+__WEEK_DAYS_MAP: dict_
 --
-_+ get_week_days(): dictionary_
-_+ get_system_time(): string_
-+ start(): void
-+ end(): void
-+ delete(): void
+/+ get_week_days(): list/
+/+ get_system_time(): str/
++ start(week_day: str, hour: int, minute: int, second: int): void
++ end(week_day: str, hour: int, minute: int, second: int): void
++ delete(week_day: str, hour: int, minute: int, second: int): void
 + check_schedule(): void</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>200</x>
+      <y>192</y>
+      <w>320</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Dispositivo&gt;&gt;
+--
+- name: str
+- state: str
+- intensity: int
+- _intensity_min: int
+- _intensity_max: int
+- _programador: Programador
+--
++ __init__(name: str, intensity_min: int, intensity_max: int): void
++ turn_on(): void
++ turn_off(): void
++ increase_intensity(): void
++ decrease_intensity(): void
++ set_programador(programador: Programador): void
++ get_programador(): Programador
++ to_dict(): dict
++ __str__(): str</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
-      <y>160</y>
-      <w>60</w>
-      <h>30</h>
+      <x>296</x>
+      <y>336</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>360</x>
+      <y>336</y>
+      <w>96</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;100.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>512</x>
+      <y>248</y>
+      <w>48</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+    <additional_attributes>40.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>360</x>
+      <y>160</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
 </diagram>
