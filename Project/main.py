@@ -1,7 +1,10 @@
 import json
+import datetime
+import time
 from smart_home.Bombilla import Bombilla
 from smart_home.AireAcondicionado import AireAcondicionado
 from smart_home.Hogar import Hogar
+from smart_home.Programador import Programador
 
 def save_state(home, filename='home_state.json'):
     state = {
@@ -81,6 +84,7 @@ def control_device(device):
         print("4. Decrease intensity/temperature")
         if isinstance(device, Bombilla):
             print("5. Change color")
+        print("6. Set schedule")
         print("0. Stop controlling this device")
 
         try:
@@ -104,12 +108,78 @@ def control_device(device):
             elif option == 5 and isinstance(device, Bombilla):
                 color = input("Enter the new color: ")
                 device.set_color(color)
+            elif option == 6:
+                set_schedule_menu(device)
             else:
                 print("Invalid option.")
         except ValueError:
             print("Please enter a number.")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+
+def set_schedule_menu(device):
+    if device.get_programador() is None:
+        print(f"Creating a new programador for {device.name}.")
+        device.set_programador(Programador(device))
+    
+    programador = device.get_programador()
+
+    while True:
+        print(f"\n--- Scheduling for {device.name} ---")
+        print("1. Schedule start time")
+        print("2. Schedule stop time")
+        print("0. Return to device control")
+
+        try:
+            option = int(input("Select an option: "))
+            if option == 0:
+                break
+            elif option in [1, 2]:
+                day = input(f"Enter day of the week ({', '.join(Programador.get_week_days())}): ")
+                time_str = input("Enter time (HH:MM:SS): ")
+                
+                try:
+                    time_parts = list(map(int, time_str.split(':')))
+                    if len(time_parts) != 3:
+                        raise ValueError("Invalid time format.")
+                        
+                    hour, minute, second = time_parts
+                    
+                    if option == 1:
+                        programador.start(day, hour, minute, second)
+                    else:
+                        programador.end(day, hour, minute, second)
+                except ValueError as e:
+                    print(f"Invalid input: {e}")
+            else:
+                print("Invalid option.")
+        except ValueError:
+            print("Please enter a number.")
+
+def simulate_time(home, duration_seconds=60):
+    print(f"\n--- Simulating time for {duration_seconds} seconds ---")
+    
+    all_devices = [dev for room in home.list_devices().values() for dev in room]
+    programadores = [dev.get_programador() for dev in all_devices if dev.get_programador() is not None]
+
+    if not programadores:
+        print("No schedules to check.")
+        return
+
+    try:
+        for i in range(duration_seconds):
+            print(f"\nSecond {i + 1}")
+            for prog in programadores:
+                prog.check_schedule()
+            
+            for dev in all_devices:
+                print(f"  {dev.name}: {dev.get_state()}")
+            
+            time.sleep(1)
+        print("\nSimulation finished.")
+    except KeyboardInterrupt:
+        print("\nSimulation stopped by user.")
+
 
 def main():
     home = load_state()
@@ -120,7 +190,8 @@ def main():
         print("2. Add room")
         print("3. Add device")
         print("4. Control devices")
-        print("5. Save and Exit")
+        print("5. Simulate time")
+        print("6. Save and Exit")
 
         option = input("Select an option: ")
 
@@ -152,8 +223,14 @@ def main():
         elif option == '4':
             device_control_menu(home)
         elif option == '5':
+            try:
+                duration = int(input("Enter simulation duration in seconds: "))
+                simulate_time(home, duration)
+            except ValueError:
+                print("Please enter a valid number.")
+        elif option == '6':
             save_state(home)
-            print("Hasta Luego!")
+            print("Goodbye!")
             break
         else:
             print("Invalid option.")

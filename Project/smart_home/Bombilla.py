@@ -25,16 +25,5 @@ class Bombilla(Dispositivo):
         data['color'] = self.color
         return data
 
-    # overwrites default method to display name instead of object hexadecimal id
     def __str__(self):
         return self.name
-
-    # programador methods
-    def set_programador(self, programador: 'Programador'):
-        self._programador = programador
-        print(f"{self.name}: Programador set")
-
-    def get_programador(self):
-        if hasattr(self, '_programador'):
-            return self._programador
-        return None

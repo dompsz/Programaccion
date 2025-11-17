@@ -5,6 +5,7 @@ class Dispositivo:
         self.intensity = intensity_min
         self._intensity_min = intensity_min
         self._intensity_max = intensity_max
+        self._programador = None
 
     def turn_on(self):
         self.state = "on"
@@ -25,6 +26,13 @@ class Dispositivo:
             raise ValueError(f"Cannot decrease the intensity of {self.name} any further. Limit reached.")
         self.intensity -= 1
         print(f"Intensity of {self.name} decreased to {self.intensity}")
+
+    def set_programador(self, programador):
+        self._programador = programador
+        print(f"{self.name}: Programador set.")
+
+    def get_programador(self):
+        return self._programador
 
     def to_dict(self):
         return {
