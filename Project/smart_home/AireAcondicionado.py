@@ -3,32 +3,28 @@ from .Dispositivo import Dispositivo
 class AireAcondicionado(Dispositivo):
     _counter = 1
 
-    def __init__(self, name=None, temperature=24, state="off"):
+    def __init__(self, name=None, temperature=24, state=False):
         if name is None:
             name = f"AireAcondicionado{AireAcondicionado._counter}"
             AireAcondicionado._counter += 1
         
-        super().__init__(name, intensity_min=16, intensity_max=30)
-        self._intensity = temperature 
+        super().__init__(name, min_intensity=16, max_intensity=30)
+        self._intensity_level = temperature 
         self._state = state
 
-    @property
-    def temperature(self):
-        return self._intensity
+    def increase_intensity(self, amount: int = 0):
+        increment = amount if amount > 0 else 1
+        self._intensity_level = min(self._max_intensity, self._intensity_level + increment)
 
-    @temperature.setter
-    def temperature(self, value):
-        if self._intensity_min <= value <= self._intensity_max:
-            self._intensity = value
-        else:
-            raise ValueError(f"Temperature must be between {self._intensity_min} and {self._intensity_max}")
+    def decrease_intensity(self, amount: int = 0):
+        decrement = amount if amount > 0 else 1
+        self._intensity_level = max(self._min_intensity, self._intensity_level - decrement)
 
     def to_dict(self):
         data = super().to_dict()
-        data['temperature'] = self._intensity
-        del data['intensity']
+        data['temperature'] = self._intensity_level
+        del data['intensity_level']
         return data
 
-    # overwrites default method to display name instead of object hexadecimal id
     def __str__(self):
-        return f"{self._name}: State: {self._state}, Temperature: {self._intensity}°C"
+        return f"{self._name}: State: {self.get_state()}, Temperature: {self._intensity_level}°C"

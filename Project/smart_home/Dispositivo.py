@@ -1,50 +1,50 @@
-class Dispositivo:
-    def __init__(self, name, intensity_min=0, intensity_max=100):
+from abc import ABC, abstractmethod
+
+class Dispositivo(ABC):
+    def __init__(self, name, min_intensity=0, max_intensity=100):
         self._name = name
-        self._state = "off"
-        self._intensity = intensity_min
-        self._intensity_min = intensity_min
-        self._intensity_max = intensity_max
-        self._programador = None
+        self._state = False  # False: off, True: on
+        self._min_intensity = min_intensity
+        self._max_intensity = max_intensity
+        self._intensity_level = min_intensity
+        self._scheduler = None
 
     def get_name(self):
         return self._name
 
     def get_state(self):
-        return self._state
+        return "On" if self._state else "Off"
 
-    def get_intensity(self):
-        return self._intensity
+    def get_intensity_level(self):
+        return self._intensity_level
 
     def turn_on(self):
-        self._state = "on"
+        self._state = True
 
     def turn_off(self):
-        self._state = "off"
+        self._state = False
 
-    def increase_intensity(self):
-        if self._intensity >= self._intensity_max:
-            raise ValueError(f"Cannot increase the intensity of {self._name} any further. Limit reached.")
-        self._intensity += 1
+    @abstractmethod
+    def increase_intensity(self, amount: int = 0):
+        pass
 
-    def decrease_intensity(self):
-        if self._intensity <= self._intensity_min:
-            raise ValueError(f"Cannot decrease the intensity of {self._name} any further. Limit reached.")
-        self._intensity -= 1
+    @abstractmethod
+    def decrease_intensity(self, amount: int = 0):
+        pass
 
-    def set_programador(self, programador):
-        self._programador = programador
+    def set_scheduler(self, scheduler):
+        self._scheduler = scheduler
 
-    def get_programador(self):
-        return self._programador
+    def get_scheduler(self):
+        return self._scheduler
 
     def to_dict(self):
         return {
             'type': self.__class__.__name__,
             'name': self._name,
             'state': self._state,
-            'intensity': self._intensity
+            'intensity_level': self._intensity_level
         }
 
     def __str__(self):
-        return f"Device: {self._name}, State: {self._state}, Intensity: {self._intensity}"
+        return f"Device: {self._name}, State: {self.get_state()}, Intensity: {self._intensity_level}"

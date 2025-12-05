@@ -1,51 +1,43 @@
 import pickle
+from .Habitacion import Habitacion
 
 class Hogar:
     def __init__(self):
-        self._rooms = {}  # dictionary: key = room name, value = list of devices
+        self._rooms = []
 
-    def add_room(self, name):
-        if name not in self._rooms:
-            self._rooms[name] = []
+    def add_room(self, room: Habitacion):
+        if not any(r.get_name() == room.get_name() for r in self._rooms):
+            self._rooms.append(room)
 
-    def remove_room(self, name):
-        if name in self._rooms:
-            del self._rooms[name]
-
-    def add_device(self, room_name, device):
-        if room_name in self._rooms:
-            self._rooms[room_name].append(device)
-
-    def remove_device(self, room_name, device):
-        if room_name in self._rooms and device in self._rooms[room_name]:
-            self._rooms[room_name].remove(device)
-
-    def modify_device(self, room_name, old_device, new_device):
-        if room_name in self._rooms:
-            try:
-                index = self._rooms[room_name].index(old_device)
-                self._rooms[room_name][index] = new_device
-            except ValueError:
-                pass
-
-    def list_devices(self):
-        return self._rooms
-
-    def device_count(self):
-        total = sum(len(d) for d in self._rooms.values())
-        per_room = {room: len(d) for room, d in self._rooms.items()}
-        return total, per_room
+    def get_room(self, room_name: str) -> Habitacion:
+        for room in self._rooms:
+            if room.get_name() == room_name:
+                return room
+        return None
 
     def get_rooms(self):
-        return list(self._rooms.keys())
+        return self._rooms
 
     def save_to_file(self, filename):
-        with open(filename, 'wb') as f:
-            pickle.dump(self._rooms, f)
+        try:
+            with open(filename, 'wb') as f:
+                pickle.dump(self._rooms, f)
+        except IOError as e:
+            print(f"Error saving state: {e}")
 
     def load_from_file(self, filename):
         try:
             with open(filename, 'rb') as f:
-                self._rooms = pickle.load(f)
+                data = pickle.load(f)
+                # Basic validation to check if the loaded data is a list of Habitacion objects
+                if isinstance(data, list) and all(isinstance(item, Habitacion) for item in data):
+                    self._rooms = data
+                else:
+                    # If data is not in the expected format, start fresh
+                    self._rooms = []
+                    print("Warning: State file was in an old format and has been reset.")
         except (FileNotFoundError, EOFError):
-            self._rooms = {}
+            self._rooms = []
+        except Exception as e:
+            print(f"Error loading state: {e}")
+            self._rooms = []

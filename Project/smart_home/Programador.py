@@ -26,7 +26,7 @@ class Programador:
         day_str = cls._WEEK_DAYS_MAP.get(now.weekday(), "Unknown")
         return f"{day_str} {now.strftime('%H:%M:%S')}"
 
-    def start(self, week_day: str, hour: int, minute: int, second: int) -> bool:
+    def add_start_event(self, week_day: str, hour: int, minute: int, second: int) -> bool:
         if week_day not in self.get_week_days():
             raise ValueError(f"ERROR: Day '{week_day}' is incorrect")
 
@@ -37,7 +37,7 @@ class Programador:
             return True
         return False
 
-    def end(self, week_day: str, hour: int, minute: int, second: int) -> bool:
+    def add_stop_event(self, week_day: str, hour: int, minute: int, second: int) -> bool:
         if week_day not in self.get_week_days():
             raise ValueError(f"ERROR: Day '{week_day}' is incorrect")
 
@@ -48,7 +48,7 @@ class Programador:
             return True
         return False
 
-    def delete(self, week_day: str, hour: int, minute: int, second: int) -> bool:
+    def delete_event(self, week_day: str, hour: int, minute: int, second: int) -> bool:
         event_start = ("START", week_day, hour, minute, second)
         event_stop = ("STOP", week_day, hour, minute, second)
 

@@ -1,0 +1,9 @@
+--- Log for room 'room' - 2025-12-05 14:59:36 ---
+- AC: State: On, Temperature: 24°C
+-----------------------------
+
+--- Log for room 'room' - 2025-12-05 15:22:03 ---
+- AC: State: On, Temperature: 24°C
+- bulbulbul: State: On, Intensity: 50%, Color: red
+-----------------------------
+
