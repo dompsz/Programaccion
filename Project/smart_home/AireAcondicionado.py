@@ -9,26 +9,26 @@ class AireAcondicionado(Dispositivo):
             AireAcondicionado._counter += 1
         
         super().__init__(name, intensity_min=16, intensity_max=30)
-        self.intensity = temperature  # use 'intensity' for temperature
-        self.state = state
+        self._intensity = temperature 
+        self._state = state
 
     @property
     def temperature(self):
-        return self.intensity
+        return self._intensity
 
     @temperature.setter
     def temperature(self, value):
-        self.intensity = value
-
-    def get_state(self):
-        return f"{self.name}: State: {self.state}, Temperature: {self.intensity}°C"
+        if self._intensity_min <= value <= self._intensity_max:
+            self._intensity = value
+        else:
+            raise ValueError(f"Temperature must be between {self._intensity_min} and {self._intensity_max}")
 
     def to_dict(self):
         data = super().to_dict()
-        data['temperature'] = self.intensity
-        del data['intensity'] # Rename for clarity
+        data['temperature'] = self._intensity
+        del data['intensity']
         return data
 
     # overwrites default method to display name instead of object hexadecimal id
     def __str__(self):
-        return self.name
+        return f"{self._name}: State: {self._state}, Temperature: {self._intensity}°C"

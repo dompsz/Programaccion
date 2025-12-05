@@ -1,50 +1,15 @@
-import json
-import datetime
 import time
 from smart_home.Bombilla import Bombilla
 from smart_home.AireAcondicionado import AireAcondicionado
 from smart_home.Hogar import Hogar
 from smart_home.Programador import Programador
 
-def save_state(home, filename='home_state.json'):
-    state = {
-        'rooms': {}
-    }
-    for room_name, devices in home.list_devices().items():
-        state['rooms'][room_name] = [d.to_dict() for d in devices]
-    
-    with open(filename, 'w') as f:
-        json.dump(state, f, indent=4)
-    print("Home state saved.")
-
-def load_state(filename='home_state.json'):
-    try:
-        with open(filename, 'r') as f:
-            state = json.load(f)
-            
-        home = Hogar()
-        for room_name, devices_data in state['rooms'].items():
-            home.add_room(room_name)
-            for data in devices_data:
-                device = None
-                if data['type'] == 'Bombilla':
-                    device = Bombilla(name=data['name'], state=data['state'], intensity=data['intensity'], color=data.get('color', 'white'))
-                elif data['type'] == 'AireAcondicionado':
-                    device = AireAcondicionado(name=data['name'], state=data['state'], temperature=data.get('temperature', 24))
-                
-                if device:
-                    home.add_device(room_name, device)
-        print("Home state loaded.")
-        return home
-    except FileNotFoundError:
-        print("No saved state found. Creating a new home.")
-        return Hogar()
-    except json.JSONDecodeError:
-        print("Error reading the state file. Creating a new home.")
-        return Hogar()
+# Constant for the state file
+HOME_STATE_FILE = 'home_state.pkl'
 
 def device_control_menu(home):
-    while True:
+    controlling = True
+    while controlling:
         print("\n--- Device Control ---")
         devices = []
         for room, devs in home.list_devices().items():
@@ -56,17 +21,19 @@ def device_control_menu(home):
             return
 
         for i, (room, dev) in enumerate(devices):
-            print(f"{i + 1}. {dev.name} in {room} ({dev.get_state()})")
+            print(f"{i + 1}. {str(dev)} in {room}")
         
         print("0. Return to the main menu and save changes")
 
         try:
-            option = int(input("Select a device to control: "))
-            if option == 0:
-                save_state(home)
-                break
+            choice = input("Select a device to control: ")
+            option = int(choice)
             
-            if 1 <= option <= len(devices):
+            if option == 0:
+                home.save_to_file(HOME_STATE_FILE)
+                print("Changes saved.")
+                controlling = False
+            elif 1 <= option <= len(devices):
                 room, device = devices[option - 1]
                 control_device(device)
             else:
@@ -75,9 +42,10 @@ def device_control_menu(home):
             print("Please enter a number.")
 
 def control_device(device):
-    while True:
-        print(f"\n--- Controlling: {device.name} ---")
-        print(f"Current state: {device.get_state()}")
+    active = True
+    while active:
+        print(f"\n--- Controlling: {device.get_name()} ---")
+        print(f"Current state: {str(device)}")
         print("1. Turn On")
         print("2. Turn Off")
         print("3. Increase intensity/temperature")
@@ -88,9 +56,11 @@ def control_device(device):
         print("0. Stop controlling this device")
 
         try:
-            option = int(input("Select an action: "))
+            choice = input("Select an action: ")
+            option = int(choice)
+
             if option == 0:
-                break
+                active = False
             elif option == 1:
                 device.turn_on()
             elif option == 2:
@@ -119,21 +89,23 @@ def control_device(device):
 
 def set_schedule_menu(device):
     if device.get_programador() is None:
-        print(f"Creating a new programador for {device.name}.")
+        print(f"Creating a new programador for {device.get_name()}.")
         device.set_programador(Programador(device))
     
     programador = device.get_programador()
-
-    while True:
-        print(f"\n--- Scheduling for {device.name} ---")
+    scheduling = True
+    while scheduling:
+        print(f"\n--- Scheduling for {device.get_name()} ---")
         print("1. Schedule start time")
         print("2. Schedule stop time")
         print("0. Return to device control")
 
         try:
-            option = int(input("Select an option: "))
+            choice = input("Select an option: ")
+            option = int(choice)
+
             if option == 0:
-                break
+                scheduling = False
             elif option in [1, 2]:
                 day = input(f"Enter day of the week ({', '.join(Programador.get_week_days())}): ")
                 time_str = input("Enter time (HH:MM:SS): ")
@@ -146,9 +118,15 @@ def set_schedule_menu(device):
                     hour, minute, second = time_parts
                     
                     if option == 1:
-                        programador.start(day, hour, minute, second)
+                        if programador.start(day, hour, minute, second):
+                            print("Start time scheduled.")
+                        else:
+                            print("Event already scheduled.")
                     else:
-                        programador.end(day, hour, minute, second)
+                        if programador.end(day, hour, minute, second):
+                            print("Stop time scheduled.")
+                        else:
+                            print("Event already scheduled.")
                 except ValueError as e:
                     print(f"Invalid input: {e}")
             else:
@@ -173,18 +151,20 @@ def simulate_time(home, duration_seconds=60):
                 prog.check_schedule()
             
             for dev in all_devices:
-                print(f"  {dev.name}: {dev.get_state()}")
+                print(f"  {str(dev)}")
             
             time.sleep(1)
         print("\nSimulation finished.")
     except KeyboardInterrupt:
         print("\nSimulation stopped by user.")
 
-
 def main():
-    home = load_state()
+    home = Hogar()
+    home.load_from_file(HOME_STATE_FILE)
+    print("Home state loaded from", HOME_STATE_FILE)
 
-    while True:
+    running = True
+    while running:
         print("\n--- Main Menu ---")
         print("1. View home status")
         print("2. Add room")
@@ -200,7 +180,7 @@ def main():
             for room, devices in home.list_devices().items():
                 print(f"Room: {room}")
                 for dev in devices:
-                    print(f"  - {dev.get_state()}")
+                    print(f"  - {str(dev)}")
         elif option == '2':
             room_name = input("Name of the new room: ")
             home.add_room(room_name)
@@ -229,9 +209,9 @@ def main():
             except ValueError:
                 print("Please enter a valid number.")
         elif option == '6':
-            save_state(home)
-            print("Goodbye!")
-            break
+            home.save_to_file(HOME_STATE_FILE)
+            print(f"Home state saved to {HOME_STATE_FILE}. Goodbye!")
+            running = False
         else:
             print("Invalid option.")
 

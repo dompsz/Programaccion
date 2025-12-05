@@ -1,3 +1,5 @@
+import pickle
+
 class Hogar:
     def __init__(self):
         self._rooms = {}  # dictionary: key = room name, value = list of devices
@@ -36,3 +38,14 @@ class Hogar:
 
     def get_rooms(self):
         return list(self._rooms.keys())
+
+    def save_to_file(self, filename):
+        with open(filename, 'wb') as f:
+            pickle.dump(self._rooms, f)
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'rb') as f:
+                self._rooms = pickle.load(f)
+        except (FileNotFoundError, EOFError):
+            self._rooms = {}

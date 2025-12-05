@@ -1,0 +1,13 @@
+{
+    "rooms": {
+        "Habitacion": [
+            {
+                "type": "Bombilla",
+                "name": "Test",
+                "state": "off",
+                "intensity": 0,
+                "color": "white"
+            }
+        ]
+    }
+}

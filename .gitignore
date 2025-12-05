@@ -1,3 +1,4 @@
 *.zip
 /Umlet
 /Project/smart_home/__pycache__
+Project/.idea/workspace.xml~
