@@ -41,3 +41,15 @@ class Hogar:
         except Exception as e:
             print(f"Error loading state: {e}")
             self._rooms = []
+
+    def __str__(self):
+        if not self._rooms:
+            return "Home is empty."
+        
+        result = "--- Home Status ---\n"
+        for room in self._rooms:
+            result += f"Room: {room.get_name()}\n"
+            for device in room.get_devices():
+                result += f"  - {str(device)}\n"
+            result += "\n"
+        return result

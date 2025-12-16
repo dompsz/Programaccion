@@ -7,3 +7,12 @@
 - bulbulbul: State: On, Intensity: 50%, Color: red
 -----------------------------
 
+--- Log for room 'room' - 2025-12-16 10:09:52 ---
+- AC: State: On, Temperature: 24°C
+- bulbulbul: State: On, Intensity: 50%, Color: red
+-----------------------------
+
+--- Log for room 'bathroom' - 2025-12-16 21:15:56 ---
+- Bombilla1: State: Off, Intensity: 0%, Color: white
+---------------------------------
+
