@@ -16,3 +16,7 @@
 - Bombilla1: State: Off, Intensity: 0%, Color: white
 ---------------------------------
 
+--- Log for room 'bathroom' - 2025-12-18 09:11:22 ---
+- Bombilla1: State: Off, Intensity: 67%, Color: red
+---------------------------------
+
